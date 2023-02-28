@@ -17,7 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //.hasRole("권한자 대문자로") : 해당 Role 소유자만 해당 페이지 허용
         //.authenticated() : Role에 상관없이 로그인만 하면 가능
         http.authorizeRequests()
-                .mvcMatchers("/", "info").permitAll()
+                .mvcMatchers("/", "/info", "/account/**").permitAll()
                 .mvcMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated();
         http.formLogin();   //기본 로그인, 로그아웃 html 제공, 로그아웃 기능

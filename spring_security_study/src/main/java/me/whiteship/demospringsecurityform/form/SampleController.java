@@ -12,17 +12,16 @@ public class SampleController {
     @GetMapping("/")
     public String index(Model model, Principal principal){
         if(principal == null){
-            model.addAttribute("message", "Hello String Security");
+            model.addAttribute("message", "Hello Index");
         }else{
             model.addAttribute("message", "Hello, " + principal.getName());
         }
-
         return "index";
     }
 
     @GetMapping("/info")
     public String info(Model model){
-        model.addAttribute("message", "Hello String Security");
+        model.addAttribute("message", "Hello Info");
         return "info";
     }
 
