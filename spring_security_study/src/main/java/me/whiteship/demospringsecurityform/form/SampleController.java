@@ -11,7 +11,7 @@ public class SampleController {
 
     @GetMapping("/")
     public String index(Model model, Principal principal){
-        if(principal.getName() == null){
+        if(principal == null){
             model.addAttribute("message", "Hello String Security");
         }else{
             model.addAttribute("message", "Hello, " + principal.getName());
@@ -28,13 +28,13 @@ public class SampleController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal){
-        model.addAttribute("message", "Hello String Security" + principal.getName());
+        model.addAttribute("message", "Hello dashboard, " + principal.getName());
         return "dashboard";
     }
 
     @GetMapping("/admin")
     public String admin(Model model, Principal principal){
-        model.addAttribute("message", "Hello String Security" + principal.getName());
+        model.addAttribute("message", "Hello Admin, " + principal.getName());
         return "admin";
     }
 }
