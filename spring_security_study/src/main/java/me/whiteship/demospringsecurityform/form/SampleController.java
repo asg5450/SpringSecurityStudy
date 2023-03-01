@@ -1,5 +1,7 @@
 package me.whiteship.demospringsecurityform.form;
 
+import me.whiteship.demospringsecurityform.account.AccountContext;
+import me.whiteship.demospringsecurityform.account.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,8 @@ import java.security.Principal;
 @Controller
 public class SampleController {
     @Autowired SampleService sampleService;
+    @Autowired
+    private AccountRepository accountRepository;
 
     @GetMapping("/")
     public String index(Model model, Principal principal){
