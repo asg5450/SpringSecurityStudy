@@ -5,14 +5,15 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService implements UserDetailsService {
     // UserDetailsService는 Spring Security에서 제공되는 Class
     // Spring Security에서 '데이터엑세스오브젝트'를 사용해서 DB에서 사용자 정보를 가져와서 인증을 할 때 사용
-
     @Autowired AccountRepository accountRepository;
+    @Autowired PasswordEncoder passwordEncoder;
 
     //username를 받아와서 해당하는 user정보를 DB에서 가져와서 UserDetails형으로 리턴해주는 메소드
     @Override
