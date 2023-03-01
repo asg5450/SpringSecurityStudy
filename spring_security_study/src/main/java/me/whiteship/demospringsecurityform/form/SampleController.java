@@ -30,6 +30,7 @@ public class SampleController {
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal){
         model.addAttribute("message", "Hello dashboard, " + principal.getName());
+        sampleService.dashboard();
         return "dashboard";
     }
 

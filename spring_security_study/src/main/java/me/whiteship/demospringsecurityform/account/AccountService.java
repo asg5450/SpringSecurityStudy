@@ -40,7 +40,10 @@ public class AccountService implements UserDetailsService {
     public Account createNew(Account account) {
 
         //@ModelAttribute로 받아온 Account객체로부터 넘어온 비밀번호 예) 123 을 {noop}123으로 변환
-        account.setPassword("{noop}" + account.getPassword());
+        //account.setPassword("{noop}" + account.getPassword());
+
+        //PasswordEncoderFactories.createDelegatingPasswordEncoder() 응용
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
 
         //this는 해당 클래스의 필드, Autowired로 얻은 Bean이 있는 객체를 지칭
         return this.accountRepository.save(account);
