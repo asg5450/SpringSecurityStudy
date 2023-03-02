@@ -3,14 +3,48 @@ package me.whiteship.demospringsecurityform.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @Configuration
 @EnableWebSecurity
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    public AccessDecisionManager accessDecisionManager(){
+        //RoleHierachyImpl : Role 간에 포함자를 정의하는 Hierachy 세팅 시작점!
+        //.serHierachy("포함자 관계")
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER");
+
+        //위에서 만든 Hierachy를 DefaultWebSecurityExpressionHandler에 세팅
+        //.setRoleHierachy("위에서 정의한 RoleHierarchyImpl객체")
+        DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
+        handler.setRoleHierarchy(roleHierarchy);
+
+        //위에서 만든 RoleHierachy를 WebExpressionVoter에 세팅
+        //.setExpressionHandler("위에서 정의한 DefaultWebSecurityExpressionHandler객체")
+        WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
+        webExpressionVoter.setExpressionHandler(handler);
+
+        //위에서 만든 WebExpressionVoter를 담은 객체들을 List<AccessDecisionVoter<? extends Object>>에 List 매개변수로 생성
+        List<AccessDecisionVoter<? extends Object>> voters = Arrays.asList(webExpressionVoter);
+
+        //List<AccesssDecisionVoter<? extends Object>> 객체를 매개변수로 담는 new AffirmativeBased 반환
+        return new AffirmativeBased(voters);
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //http.authorizeRequests() : url로 들어오는 요청을 어떤 경우에 허락할지
@@ -22,7 +56,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .mvcMatchers("/", "/info", "/account/**").permitAll()
                 .mvcMatchers("/admin").hasRole("ADMIN")
-                .anyRequest().authenticated();
+                .mvcMatchers("/user").hasRole("USER")
+                .anyRequest().authenticated()
+                .accessDecisionManager(accessDecisionManager());
         http.formLogin();   //기본 로그인, 로그아웃 html 제공, 로그아웃 기능
         http.httpBasic();
 
