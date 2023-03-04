@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 
@@ -53,15 +54,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //불필요한 요청들에 대한 filter 생성을 막아서 성능 이득!
         //.ignoring()은 방식이 많기 때문에 더 찾아서 사용하기를 바람
     }
-
+    //http.authorizeRequests() : url로 들어오는 요청을 어떤 경우에 허락할지
+    //.mvcMatchers("페이지 url1", "페이지 url2") : 괄호 안에 url요청에 권한 설정을 할 때
+    //.anyRequest() : mvcMatchers()에 설정되지 않은 나머지 페이지 전부에 적용
+    //.permitAll() : 전체 허용
+    //.hasRole("권한자 대문자로") : 해당 Role 소유자만 해당 페이지 허용
+    //.authenticated() : Role에 상관없이 로그인만 하면 가능
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //http.authorizeRequests() : url로 들어오는 요청을 어떤 경우에 허락할지
-        //.mvcMatchers("페이지 url1", "페이지 url2") : 괄호 안에 url요청에 권한 설정을 할 때
-        //.anyRequest() : mvcMatchers()에 설정되지 않은 나머지 페이지 전부에 적용
-        //.permitAll() : 전체 허용
-        //.hasRole("권한자 대문자로") : 해당 Role 소유자만 해당 페이지 허용
-        //.authenticated() : Role에 상관없이 로그인만 하면 가능
         http.authorizeRequests()
                 .mvcMatchers("/", "/info", "/account/**").permitAll()
                 .mvcMatchers("/admin").hasRole("ADMIN")
@@ -71,5 +71,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin();   //기본 로그인, 로그아웃 html 제공, 로그아웃 기능
         http.httpBasic();
 
+        //SecurityContextHolder.setStrategyName() : 기본값은 ThreadLocal로서 같은 쓰레드에만 공유함
+        //.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL)
+        // => 비동기로 처리 관련 내부에 생긴 다른 쓰레드에서도 ContextHolder를 공유
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 }
