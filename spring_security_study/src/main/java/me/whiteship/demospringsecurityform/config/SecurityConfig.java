@@ -70,6 +70,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDecisionManager(accessDecisionManager());
         http.formLogin();   //기본 로그인, 로그아웃 html 제공, 로그아웃 기능
         http.httpBasic();
+
+        http.logout()
+                .logoutSuccessUrl("/");  //로그아웃 성공했을 때 페이지
+//                .logoutUrl()    //기본값 = "/logout"   이게 Security에서 제공하는 기본 로그아웃 페이지
+//                .deleteCookies();   //쿠키 기반의 인증방식을 사용했다면 매개변수에 쿠키명을 넣어주면 지워짐
+
         //CSRF 토큰 인증 방식을 사용하지 않겠다는 설정
 //        http.csrf().disable();
 
