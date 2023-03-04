@@ -2,12 +2,16 @@ package me.whiteship.demospringsecurityform.form;
 
 import me.whiteship.demospringsecurityform.account.AccountContext;
 import me.whiteship.demospringsecurityform.account.AccountRepository;
+import me.whiteship.demospringsecurityform.common.SecurityLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
+import java.util.concurrent.Callable;
 
 @Controller
 public class SampleController {
@@ -49,4 +53,16 @@ public class SampleController {
         model.addAttribute("message", "Hello User, " + principal.getName());
         return "user";
     }
+
+    @GetMapping("/async-handler")
+    @ResponseBody
+    //asyn-Handler는 Callable<> 리턴
+    public Callable<String> asyncHandler(){
+        SecurityLogger.log("MVC");
+        return () -> {
+            SecurityLogger.log("Callable");
+            return "Async Handler";
+        };
+    }
+
 }
