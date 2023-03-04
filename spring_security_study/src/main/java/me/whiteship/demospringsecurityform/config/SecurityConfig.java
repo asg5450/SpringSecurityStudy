@@ -70,6 +70,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDecisionManager(accessDecisionManager());
         http.formLogin();   //기본 로그인, 로그아웃 html 제공, 로그아웃 기능
         http.httpBasic();
+        //CSRF 토큰 인증 방식을 사용하지 않겠다는 설정
+//        http.csrf().disable();
 
         //SecurityContextHolder.setStrategyName() : 기본값은 ThreadLocal로서 같은 쓰레드에만 공유함
         //.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL)
