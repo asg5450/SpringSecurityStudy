@@ -68,7 +68,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/user").hasRole("USER")
                 .anyRequest().authenticated()
                 .accessDecisionManager(accessDecisionManager());
-        http.formLogin();   //기본 로그인, 로그아웃 html 제공, 로그아웃 기능
+        //기본 로그인, 로그아웃 html 제공, 로그아웃 기능
+        http.formLogin()
+                        .loginPage("/login").permitAll();
         http.httpBasic();
 
         http.logout()
