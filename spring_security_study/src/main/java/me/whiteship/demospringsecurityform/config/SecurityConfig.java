@@ -1,5 +1,7 @@
 package me.whiteship.demospringsecurityform.config;
 
+import me.whiteship.demospringsecurityform.account.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -25,12 +27,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @Configuration
 @EnableWebSecurity
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired AccountService accountService;
 
     public AccessDecisionManager accessDecisionManager(){
         //RoleHierachyImpl : Role 간에 포함자를 정의하는 Hierachy 세팅 시작점!
@@ -79,6 +82,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin()
                         .loginPage("/login").permitAll();
         http.httpBasic();
+
+        // remember-me 라는 쿠키를 남김으로써, JSESSION 쿠키가 사라져도 remember-me 쿠키에 의해 JSESSION이 생성되고 재인증을 하지 않음
+        http.rememberMe()
+                .rememberMeParameter("remember-me") // 여기가 html form태그 name=""이랑 매칭되는 이름 설정  (기본값 : "remember-me")
+                .tokenValiditySeconds(600)  //remember-me 쿠키의 보존시간 "초 단위" (기본값 : 2주)
+                        .userDetailsService(accountService) //매개변수로 내가 UserDetailsService 상속받아서 만든 Service클래스
+                                .key("remember-me-sample");
+
+
 
         http.logout()
                 .logoutSuccessUrl("/");  //로그아웃 성공했을 때 페이지
