@@ -6,6 +6,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,9 +14,15 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -86,6 +93,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .expiredUrl("/login")  //maximumSession으로 만료됐을 때, 이동시킬 url
                     .maxSessionsPreventsLogin(true);    //기본값 : false  -> false면 후발 접속자가 들어오면 원래 로그인했던 유저가 expire(만료)됨
                                                         //true면 동일 계정의 후발 접속자의 로그인이 막힘
+
+        http.exceptionHandling()
+                .accessDeniedHandler(new AccessDeniedHandler() {
+                    @Override
+                    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+                        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                        String username = userDetails.getUsername();
+                        System.out.println(username + " is denied to access " + request.getRequestURI());
+                                        // 인증한 객체의 username + "is denied to access " + denied 당한 요청페이지
+                                        // asg5450 is denied to access /admin
+                        response.sendRedirect("/access-denied");
+                    }
+                });
 
 
         //CSRF 토큰 인증 방식을 사용하지 않겠다는 설정
