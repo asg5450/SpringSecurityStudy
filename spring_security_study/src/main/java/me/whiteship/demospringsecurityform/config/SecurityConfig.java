@@ -78,6 +78,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .logoutUrl()    //기본값 = "/logout"   이게 Security에서 제공하는 기본 로그아웃 페이지
 //                .deleteCookies();   //쿠키 기반의 인증방식을 사용했다면 매개변수에 쿠키명을 넣어주면 지워짐
 
+        http.sessionManagement()
+                .sessionFixation()
+                        .changeSessionId()
+                .invalidSessionUrl("/login")
+                .maximumSessions(1)  //동일 계정에 대해서 Session을 허락할 갯수
+                    .expiredUrl("/login")  //maximumSession으로 만료됐을 때, 이동시킬 url
+                    .maxSessionsPreventsLogin(true);    //기본값 : false  -> false면 후발 접속자가 들어오면 원래 로그인했던 유저가 expire(만료)됨
+                                                        //true면 동일 계정의 후발 접속자의 로그인이 막힘
+
+
         //CSRF 토큰 인증 방식을 사용하지 않겠다는 설정
 //        http.csrf().disable();
 
