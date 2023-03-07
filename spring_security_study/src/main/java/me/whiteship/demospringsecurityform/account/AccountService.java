@@ -28,11 +28,7 @@ public class AccountService implements UserDetailsService {
         }
 
         //User라는 Security 제공 Class의 builder를 통해 UserDetails를 대신해서 리턴가능
-        return User.builder()
-                .username(account.getUsername())
-                .password(account.getPassword())
-                .roles(account.getRole())
-                .build();
+        return new UserAccount(account);
     }
 
 
