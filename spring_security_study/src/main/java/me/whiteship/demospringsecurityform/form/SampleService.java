@@ -4,6 +4,7 @@ import me.whiteship.demospringsecurityform.account.Account;
 import me.whiteship.demospringsecurityform.account.AccountContext;
 import me.whiteship.demospringsecurityform.common.SecurityLogger;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,8 @@ import java.util.Collection;
 
 @Service
 public class SampleService {
+
+    @Secured("ROLE_USER")   //해당 권한이 없으면 메소드 사용불가 == 동일한 어노테이션 @RolesAllowed("ROLE_USER")
     public void dashboard(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
